@@ -28,36 +28,44 @@ temp_id = 8   # Used only in prog2
 W_id = 9       # Used only in prog2
 
 # TODO: Fill in prog1 with the first RAM program provided in the homework.
-prog1 = [8, 
+prog1 = [10,
     ['assign', zero_id, 0],
-    ['assign', one_id, 1], 
+    ['assign', one_id, 1],
     ['assign', thirteen_id, 13],
-    ['assign', output_len_id, 1], 
+    ['assign', output_len_id, 1],
     ['assign', output_ptr_id, 0],
-    # TODO: lines 5-8 from pseudocode
+    ['assign', result_id, 13],
+    ['read', counter_id, zero_id],
+    ['goto', counter_id, 11],              # if counter == 0 -> line 11
+    ['*', result_id, result_id, result_id],
     ['-', counter_id, counter_id, one_id],
-    ['goto', zero_id, 7],
+    ['goto', zero_id, 7],                  # unconditional loop back
     ['*', result_id, result_id, thirteen_id],
-    ['write', output_ptr_id, result_id]
+    ['write', output_ptr_id, result_id],
 ]
 
 # TODO: Fill in prog2 with the second RAM program provided in the homework.
-prog2 = [10, 
+prog2 = [12,
     ['assign', zero_id, 0],
-    ['assign', one_id, 1], 
-    ['assign', thirteen_id, 13], 
-    ['assign', output_len_id, 1], 
+    ['assign', one_id, 1],
+    ['assign', thirteen_id, 13],
+    ['assign', output_len_id, 1],
     ['assign', output_ptr_id, 0],
     ['assign', result_id, 13],
     ['assign', W_id, 2**32],
     ['read', counter_id, zero_id],
-    ['goto', counter_id, 15],
+    ['goto', counter_id, 15],              # if counter == 0 -> line 15
     ['*', result_id, result_id, result_id],
+    ['/', temp_id, result_id, W_id],       # temp = floor(result / W)
+    ['*', temp_id, temp_id, W_id],         # temp = temp * W
+    ['-', result_id, result_id, temp_id],  # result = result mod W
+    ['-', counter_id, counter_id, one_id],
+    ['goto', zero_id, 8],                  # unconditional loop back
+    ['*', result_id, result_id, thirteen_id],
     ['/', temp_id, result_id, W_id],
     ['*', temp_id, temp_id, W_id],
     ['-', result_id, result_id, temp_id],
-    ['-', counter_id, counter_id, one_id],
-    # TODO: lines 14-19 from pseudocode
+    ['write', output_ptr_id, result_id],
 ]
 
 
