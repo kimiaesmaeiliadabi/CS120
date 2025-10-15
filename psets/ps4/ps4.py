@@ -91,6 +91,12 @@ class HashTable:
             return head.value
         else:
             # TODO: Implement search for opt=False
+            # traverse the chain and return the value for the first node with matching key
+            node = head
+            while node is not None:
+                if node.key == key:
+                    return node.value
+                node = node.next
             return None
     
     '''
@@ -112,4 +118,15 @@ class HashTable:
             return True
         else:
             # TODO: Implement delete for opt=False
+            prev = None
+            curr = self.table[idx]
+            while curr is not None:
+                if curr.key == key:
+                    if prev is None:
+                        # deleteting the head
+                        self.table[idx] = curr.next
+                    else:
+                        prev.next = curr.next
+                    return True
+                prev, curr = curr, curr.next
             return False

@@ -67,5 +67,47 @@ def BC(n, b, k):
     return digits
 
 def radixSort(univsize, base, arr):
-    """TODO: Implement Radix Sort using BC and singletonBucketSort"""
-    return [] 
+    """
+    LSD Radix Sort using:
+      - BC(n, b, k): returns the length-k base-b digit array (LSB first) for n
+      - singletonBucketSort(univsize, arr): stable bucket sort on arr of pairs (key, value)
+        with keys in [0, univsize-1].
+
+    Inputs:
+      univsize (U): size of the key universe (keys are in [0, U-1])
+      base (b):     radix base (>= 2)
+      arr:          list of pairs (K, V)
+    Output:
+      new list sorted by the numeric keys K (stable).
+    """
+    n = len(arr)
+    if n <= 1 or univsize <= 1:
+        # already sorted (all keys are 0 if U<=1)
+        return arr[:]
+    if base < 2:
+        raise ValueError("base must be >= 2")
+
+    # number of passes: k = ceil(log_b U)
+    # (math.log(U, base) == log_b U; if U==1 then k=0, but we returned above)
+    k = int(math.ceil(math.log(univsize, base)))
+
+    # Precompute the length-k base-b digits for each key (LSB first) and
+    # keep them attached to the record so we don't recompute.
+    # Each 'record' is [digits, (K, V)] so that we can carry digits across passes.
+    records = []
+    for (K, V) in arr:
+        digits = BC(K, base, k)   # length-k, LSD at index 0
+        records.append([digits, (K, V)])
+
+    # For each digit position j (LSB to MSB):
+    for j in range(k):
+        # Build the input for a stable bucket sort on the j-th digit.
+        # singletonBucketSort expects a list of (key, value) with keys in [0, base-1].
+        bucket_input = [(rec[0][j], rec) for rec in records]
+        sorted_pairs = singletonBucketSort(base, bucket_input)
+
+        # Unwrap back to the 'records' order for the next pass (stability preserved).
+        records = [rec for (_, rec) in sorted_pairs]
+
+    # Return the final order of (K, V) pairs.
+    return [rec[1] for rec in records]
