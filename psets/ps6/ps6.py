@@ -172,9 +172,34 @@ def bfs_2_coloring(G, precolored_nodes=None):
     
     # TODO: Complete this function by implementing two-coloring using the colors 0 and 1.
     # If there is no valid coloring, reset all the colors to None using G.reset_colors()
+    # BFS over all components
+    queue = []
+    head = 0
     
-    G.reset_colors()
-    return None
+    for s in range(G.N):
+        if G.colors[s] is not None:  # already precolored 2 or already reached
+            continue
+        # start a new component at s w/ color 0
+        G.colors[s] = 0
+        visited.add(s)
+        queue.append(s)
+
+        while head < len(queue):
+            v = queue[head]; head += 1
+            for w in G.edges[v]:
+                if G.colors[w] is None:
+                    # if uncolored or not precolored, assign opposite 0/1 color
+                    G.colors[w] = 1 - G.colors[v]
+                    if w not in visited:
+                        visited.add(w)
+                        queue.append(w)
+                else:
+                    # if both endpoints are in the 0/1 region, they must differ
+                    if G.colors[w] != 2 and G.colors[v] != 2 and G.colors[w] == G.colors[v]:
+                        G.reset_colors()
+                        return None
+    
+    return G.colors
 
 
 
@@ -192,9 +217,13 @@ def bfs_2_coloring(G, precolored_nodes=None):
 # If no coloring is possible, resets all of G's colors to None and returns None.
 def iset_bfs_3_coloring(G):
     # TODO: Complete this function.
-
-    G.reset_colors()
-    return None
+    # try every S and for each one, fix S to color 2 then try to 2-color the remainder using BFS
+    for S in get_maximal_isets(G):
+        H = G.clone() 
+        res = bfs_2_coloring(H, precolored_nodes=S)
+        if res is not None: # found a valid 3-coloring
+            G.colors = res[:] # copy back to G
+            return G.colors
 
 # Feel free to add miscellaneous tests below!
 if __name__ == "__main__":

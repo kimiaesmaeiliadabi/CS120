@@ -35,15 +35,15 @@ random.seed(120)
 '''
 
 # The timeout length in seconds
-TIMEOUT_LENGTH = 1
+TIMEOUT_LENGTH = 10
 
 def benchmark():
     # You may experiment with these parameters if you wish!
     # Each of these ranges is formatted with a minimum, maximum, and step size.
-    subgraph_line_parameter_range = (100, 300, 100)
-    cluster_graph_p_parameter_range = (0.2, 0.95, 0.15)
-    cluster_graph_cluster_size_parameter_range = (2, 26, 8)
-    cluster_graph_cluster_quantity_parameter_range = (2, 5, 1)
+    subgraph_line_parameter_range = (10, 220, 10)
+    cluster_graph_p_parameter_range = (0.2, 1, 0.2)
+    cluster_graph_cluster_size_parameter_range = (2, 34, 8)
+    cluster_graph_cluster_quantity_parameter_range = (2, 8, 2)
 
     algs = [("Exhaustive Coloring", lambda g: exhaustive_search_coloring(g)),
             ("ISET BFS Coloring", lambda g: iset_bfs_3_coloring(g))]
@@ -62,7 +62,7 @@ def benchmark():
                 try:
                     with timeout(seconds=TIMEOUT_LENGTH):
                         alg(g.clone())
-                except TimeoutError:
+                except (TimeoutError, RecursionError):
                     timedout = True
                 col = color.GREEN if not timedout else color.ORANGE
                 if timedout:
