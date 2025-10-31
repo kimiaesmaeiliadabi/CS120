@@ -175,7 +175,7 @@ def bfs_2_coloring(G, precolored_nodes=None):
     # BFS over all components
     queue = []
     head = 0
-    
+
     for s in range(G.N):
         if G.colors[s] is not None:  # already precolored 2 or already reached
             continue
@@ -224,6 +224,10 @@ def iset_bfs_3_coloring(G):
         if res is not None: # found a valid 3-coloring
             G.colors = res[:] # copy back to G
             return G.colors
+    
+    G.reset_colors()
+    return None
+
 
 # Feel free to add miscellaneous tests below!
 if __name__ == "__main__":
